@@ -1,3 +1,6 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/4mtheyq9rl07ynsl/branch/master?svg=true)](https://ci.appveyor.com/project/Danielku15/aspnet-url-versioning/branch/master)
+
+
 # ASP.net API Versioning - URL segment extensions
 
 This library is an extension to the [ASP.NET API versioning](https://github.com/Microsoft/aspnet-api-versioning) library of Microsoft addressing 
