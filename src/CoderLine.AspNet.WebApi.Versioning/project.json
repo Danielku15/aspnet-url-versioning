@@ -1,0 +1,42 @@
+﻿{
+    "version": "2.0.3-*",
+    "authors": [ "Danielku15" ],
+    "title": "CoderLine ASP.net Web API URL Versioning",
+    "copyright": "Copyright © 2016. Daniel Kuschny. All rights reserved",
+    "description": "Extends aspnet-api-versioning with URL focused versioning features",
+    "language": "en",
+
+    "dependencies": {
+        "Microsoft.AspNet.WebApi.Core": "5.2.3",
+        "Microsoft.AspNet.WebApi.Versioning": "2.0.3"
+    },
+
+    "frameworks": {
+        "net451": {
+        },
+        "net46": {
+        }
+    },
+
+    "buildOptions": {
+        "compile": [ "**/*.cs" ],
+        "keyFile": "../../tools/key.snk",
+        "xmlDoc": true,
+        "define": [ "WEBAPI" ]
+    },
+
+    "packOptions": {
+        "summary": "Provides URL focused API versioning aspnet-api-versioning created using ASP.NET Web API",
+        "tags": [ "AspNet", "AspNetWebAPI", "Versioning" ],
+        "owners": [ "Danielku15" ],
+        "releaseNotes": "",
+        "iconUrl": "http://www.gravatar.com/avatar/68afa4919e81579d2c127dd2087ef841.png",
+        "licenseUrl": "https://raw.githubusercontent.com/Danielku15/aspnet-url-versioning/master/LICENSE",
+        "requireLicenseAcceptance": true,
+        "repository": {
+            "type": "git",
+            "url": "https://github.com/Danielku15/aspnet-url-versioning"
+        }
+    }
+
+}

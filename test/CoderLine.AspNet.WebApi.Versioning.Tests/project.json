@@ -1,0 +1,29 @@
+﻿{
+    "version": "1.0.0-*",
+
+    "dependencies": {
+        "Microsoft.AspNet.WebApi.Core": "5.2.3",
+        "FluentAssertions": "4.12.0",
+        "xunit": "2.2.0-beta5-build3474",
+        "dotnet-test-xunit": "2.2.0-preview2-build1029",
+        "Moq": "4.5.16",
+        "CoderLine.AspNet.WebApi.Versioning": {
+            "target": "project",
+            "version": ""
+        }
+    },
+
+    "frameworks": {
+        "net451": {
+        },
+        "net46": {
+        }
+    },
+
+    "testRunner": "xunit",
+
+    "buildOptions": {
+        "compile": [ "**/*.cs" ],
+        "define": [ "WEBAPI" ]
+    }
+}
