@@ -21,6 +21,8 @@ configuration.AddApiVersioningWithUrlSupport(o =>
     o.VersioningOptions.AssumeDefaultVersionWhenUnspecified = true;
 });
 ```
+Be sure to remove any existing  `AddApiVersioning` and `MapHttpAttributeRoute` calls to prevent multiple initialization.  
+
 This extension is related to https://github.com/Microsoft/aspnet-api-versioning/issues/73
 
 ## ApiExplorer implementation for SwashBuckle compatibility. 
