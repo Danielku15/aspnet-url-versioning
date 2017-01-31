@@ -3,8 +3,13 @@
 
 # ASP.net API Versioning - URL segment extensions
 
-This library is an extension to the [ASP.NET API versioning](https://github.com/Microsoft/aspnet-api-versioning) library of Microsoft addressing 
-missing features on URL segment based versioning. 
+This library is an extension to the [ASP.NET API versioning](https://github.com/Microsoft/aspnet-api-versioning) library of Microsoft addressing missing features on URL segment based versioning. 
+
+Be aware that this framework performs some initialization steps that might already be present in your startup sequence. Please ensure the following criterion are met: 
+
+* No `AddApiVersioning` call is made if you use `AddApiVersioningWithUrlSupport`. `AddApiVersioningWithUrlSupport` will internally call the `AddApiVersioning`
+* No `MapHttpAttributeRoute`call is made if you use `AddApiVersioningWithUrlSupport`. `AddApiVersioningWithUrlSupport` will internally call the `MapHttpAttributeRoute` with a custom route provider. 
+* No custom controller selector is registered. ASP.net API versioning comes with a special controller selector handling all neccessary versioning rules. 
 
 It adds support for the following features. 
 
@@ -21,8 +26,6 @@ configuration.AddApiVersioningWithUrlSupport(o =>
     o.VersioningOptions.AssumeDefaultVersionWhenUnspecified = true;
 });
 ```
-Be sure to remove any existing  `AddApiVersioning` and `MapHttpAttributeRoute` calls to prevent multiple initialization.  
-
 This extension is related to https://github.com/Microsoft/aspnet-api-versioning/issues/73
 
 ## ApiExplorer implementation for SwashBuckle compatibility. 
