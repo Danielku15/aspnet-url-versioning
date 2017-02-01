@@ -10,7 +10,8 @@
         "CoderLine.AspNet.WebApi.Versioning": {
             "target": "project",
             "version": ""
-        }
+        },
+        "SwashBuckle.Core": "5.4.0"
     },
 
     "frameworks": {

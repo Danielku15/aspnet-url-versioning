@@ -146,8 +146,8 @@ namespace CoderLine.AspNet.WebApi.Versioning
             {
                 // check whether route is versionized
                 var versionModel = apiDescription.ActionDescriptor.ControllerDescriptor.GetApiVersionModel();
-                var versionConstraints = apiDescription.Route.Constraints.Where(r => r.Value is ApiVersionRouteConstraint).ToArray();
-                if (versionConstraints.Length == 0 || versionModel.IsApiVersionNeutral)
+                var versionConstraints = new HashSet<string>(apiDescription.Route.Constraints.Where(r => r.Value is ApiVersionRouteConstraint).Select(r => r.Key));
+                if (versionConstraints.Count == 0 || versionModel.IsApiVersionNeutral)
                 {
                     // add default verison routes, or routes that have nothing to do with versioning
                     if (versionModel.IsApiVersionNeutral || _options.IncludeDefaultVersion || !apiDescription.Route.DataTokens.ContainsKey(ApiVersionDirectRouteProvider.IsDefaultVersionRouteKey))
@@ -164,7 +164,7 @@ namespace CoderLine.AspNet.WebApi.Versioning
                         var finalPath = apiDescription.RelativePath;
                         foreach (var constraint in versionConstraints)
                         {
-                            finalPath = finalPath.Replace("{" + constraint.Key + "}", versionString);
+                            finalPath = finalPath.Replace("{" + constraint + "}", versionString);
                         }
 
                         var versionizedDescription = new ApiDescription
@@ -184,9 +184,14 @@ namespace CoderLine.AspNet.WebApi.Versioning
                         {
                             versionizedDescription.SupportedRequestBodyFormatters.Add(formatter);
                         }
-                        foreach (var formatter in apiDescription.ParameterDescriptions)
+                        foreach (var parameterDescription in apiDescription.ParameterDescriptions)
                         {
-                            versionizedDescription.ParameterDescriptions.Add(formatter);
+                            // prevent the version constraints of the URI to be added to the api descriptor
+                            if (parameterDescription.Source != ApiParameterSource.FromUri ||
+                                !versionConstraints.Contains(parameterDescription.Name))
+                            {
+                                versionizedDescription.ParameterDescriptions.Add(parameterDescription);
+                            }
                         }
 
                         ApiDescription_ResponseDescription(versionizedDescription, new ResponseDescription

@@ -1,7 +1,11 @@
-﻿using System.Net.Http;
+﻿using System.IO;
+using System.Net.Http;
 using System.Web.Http;
 using FluentAssertions;
 using Microsoft.Web.Http;
+using Newtonsoft.Json;
+using Swashbuckle.Application;
+using Swashbuckle.Swagger;
 using Xunit;
 
 namespace CoderLine.AspNet.WebApi.Versioning.Tests

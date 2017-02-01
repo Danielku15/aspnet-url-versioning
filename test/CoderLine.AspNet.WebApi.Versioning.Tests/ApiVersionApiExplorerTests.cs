@@ -1,6 +1,16 @@
-﻿using System.Web.Http;
+﻿using System;
+using System.Linq;
+using System.Net.Http;
+using System.Reflection;
+using System.Web.Http;
+using System.Web.Http.Controllers;
+using System.Web.Http.Description;
+using System.Web.Http.Dispatcher;
 using FluentAssertions;
 using Microsoft.Web.Http;
+using Newtonsoft.Json;
+using Swashbuckle.Application;
+using Swashbuckle.Swagger;
 using Xunit;
 
 namespace CoderLine.AspNet.WebApi.Versioning.Tests
@@ -127,6 +137,105 @@ namespace CoderLine.AspNet.WebApi.Versioning.Tests
             var vDefault = apiDescriptions[4];
             vDefault.RelativePath.ShouldBeEquivalentTo("api/agreements/{accountId}");
             vDefault.ActionDescriptor.ControllerDescriptor.ControllerType.Should().Be(typeof(TestControllers.V3.AgreementsController));
+        }
+
+        [Fact]
+        public void apidescriptors_must_not_contain_version_parameter()
+        {
+            // arrange
+            var configuration = new HttpConfiguration();
+            configuration.AddApiVersioningWithUrlSupport(o =>
+            {
+                o.VersioningOptions.DefaultApiVersion = new ApiVersion(3, 0);
+            });
+            configuration.AddApiVersioningAwareApiExplorer();
+            configuration.EnsureInitialized();
+            var apiExplorer = configuration.Services.GetApiExplorer();
+
+            // act
+            var apiDescriptions = apiExplorer.ApiDescriptions;
+
+            // assert
+            apiDescriptions.Count.ShouldBeEquivalentTo(5);
+
+            foreach (var apiDescription in apiDescriptions)
+            {
+                apiDescription.ParameterDescriptions.Should().NotContain(desc => desc.Name == "version");
+            }
+        }
+        [Fact]
+        public void swagger_must_not_contain_version_parameter()
+        {
+            // arrange
+            var configuration = new HttpConfiguration();
+            configuration.AddApiVersioningWithUrlSupport(o =>
+            {
+                o.VersioningOptions.DefaultApiVersion = new ApiVersion(3, 0);
+            });
+            configuration.AddApiVersioningAwareApiExplorer(o =>
+            {
+                o.IncludeDefaultVersion = false;
+                o.PreferShortHandVersion = true;
+            });
+            SwaggerDocsConfig swaggerDocsConfig = null;
+            configuration.EnableSwagger(c =>
+                {
+                    swaggerDocsConfig = c;
+                    c.MultipleApiVersions((description, version) => description.RelativePath.StartsWith("api/" + version), vc =>
+                    {
+                        vc.Version("v3", "API v3");
+                    });
+                    c.GroupActionsBy(m =>
+                    {
+                        var name = m.ActionDescriptor.ControllerDescriptor.ControllerName;
+                        if (name.EndsWith(DefaultHttpControllerSelector.ControllerSuffix))
+                        {
+                            name = name.Substring(0, name.Length - DefaultHttpControllerSelector.ControllerSuffix.Length);
+                        }
+                        return name;
+                    });
+                });
+
+            configuration.EnsureInitialized();
+
+            // act
+            var swaggerDocument = GetSwaggerProvider(configuration, swaggerDocsConfig).GetSwagger("http://localhost", "v3");
+
+            // assert
+            Action<Operation> validateOperation = op => op?.parameters?.Should().NotContain(p => p.name == "version");
+
+            foreach (var path in swaggerDocument.paths)
+            {
+                validateOperation(path.Value.head);
+                validateOperation(path.Value.delete);
+                validateOperation(path.Value.get);
+                validateOperation(path.Value.options);
+                validateOperation(path.Value.post);
+                validateOperation(path.Value.patch);
+                validateOperation(path.Value.put);
+            }
+
+            var serializerSettings = new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore,
+                Formatting = Formatting.Indented,
+                Converters = new JsonConverter[] { new VendorExtensionsConverter() }
+            };
+            var swaggerJson = JsonConvert.SerializeObject(swaggerDocument.paths, Formatting.Indented, serializerSettings);
+            swaggerJson.Should().NotContain("version");
+        }
+
+        private ISwaggerProvider GetSwaggerProvider(HttpConfiguration configuration, SwaggerDocsConfig swaggerDocsConfig)
+        {
+            var method = swaggerDocsConfig.GetType()
+                .GetMethod("GetSwaggerProvider", BindingFlags.Instance | BindingFlags.NonPublic);
+
+            var request = new HttpRequestMessage();
+            request.SetRequestContext(new HttpRequestContext
+            {
+                Configuration = configuration
+            });
+            return (ISwaggerProvider)method.Invoke(swaggerDocsConfig, new object[] { request });
         }
     }
 }
