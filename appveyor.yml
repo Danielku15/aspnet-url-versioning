@@ -7,7 +7,7 @@ build:
   publish_nuget_symbols: true
   verbosity: minimal
 after_build:
-- ps: .\pack.ps1
+- ps: .\pack.ps1 -VersionStatus $env:APPVEYOR_BUILD_NUMBER
 artifacts:
 - path: NuGet\*.nupkg
   name: NuGet
