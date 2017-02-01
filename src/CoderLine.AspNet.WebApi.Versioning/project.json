@@ -1,5 +1,5 @@
 ﻿{
-    "version": "2.0.3-*",
+    "version": "1.0.1-*",
     "authors": [ "Danielku15" ],
     "title": "CoderLine ASP.net Web API URL Versioning",
     "copyright": "Copyright © 2016. Daniel Kuschny. All rights reserved",

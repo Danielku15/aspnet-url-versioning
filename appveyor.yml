@@ -1,4 +1,4 @@
-version: 2.0.3.{build}
+version: 1.0.1.{build}
 image: Visual Studio 2015
 before_build:
 - dotnet restore
@@ -7,7 +7,7 @@ build:
   publish_nuget_symbols: true
   verbosity: minimal
 after_build:
-- ps: .\pack.ps1 -VersionStatus build$env:APPVEYOR_BUILD_NUMBER
+- ps: .\pack.ps1
 artifacts:
 - path: NuGet\*.nupkg
   name: NuGet
